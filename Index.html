@@ -1,9 +1,68 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
+
 <!--Hello, this is our first draft page-->
 
-<body>
-    <p>Hello</p>
-</body>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
 
+<!-- Add 2 buttons -->
+<button onclick="update(data1)">2017</button>
+<button onclick="update(data2)">2018</button>
+<button onclick="update(data3)">2019</button>
+<button onclick="update(data4)">2020</button>
+<button onclick="update(data5)">2021</button>
+
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<script>
+
+    // create 5 data sets for each category containing every year
+    var data_marriage = [
+       {group: "2017", value: 4},
+       {group: "2018", value: 16},
+       {group: "2019", value: 8},
+       {group: "2020", value: 8},
+       {group: "2021", value: 8},
+    ];
+    
+    var data_birth = [
+       {group: "2017", value: 4},
+       {group: "2018", value: 16},
+       {group: "2019", value: 8},
+       {group: "2020", value: 8},
+       {group: "2021", value: 8},
+    ];
+
+    var data_death = [
+       {group: "2017", value: 4},
+       {group: "2018", value: 16},
+       {group: "2019", value: 8},
+       {group: "2020", value: 8},
+       {group: "2021", value: 8},
+    ];
+
+    var data_unemployment = [
+       {group: "2017", value: 4},
+       {group: "2018", value: 16},
+       {group: "2019", value: 8},
+       {group: "2020", value: 8},
+       {group: "2021", value: 8},
+    ];
+
+    var data_crime = [
+       {group: "2017", value: 4},
+       {group: "2018", value: 16},
+       {group: "2019", value: 8},
+       {group: "2020", value: 8},
+       {group: "2021", value: 8},
+    ];
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 60, left: 60},
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
 
 </html>

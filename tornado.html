@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!--this file includes a butterfly chart that illustrates our visual intentions-->
+
+
+<style>
+
+.bar--positive {
+  fill: lightgreen;
+}
+
+.bar--negative {
+  fill: firebrick;
+}
+
+text {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+}
+</style>
+
+<body>
+
+<p id="example"></p>
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script>
+
+function tornadoChart() {
+  var margin = {top: 50, right: 20, bottom: 70, left: 130},
+    width = 900 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+  var x = d3.scale.linear()
+      .range([0, width]);
+
+  var y = d3.scale.ordinal()
+      .rangeRoundBands([0, height], 0.1);
+
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom")
+      .ticks(10)
+
+
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .tickSize(0)
+
+  var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    	.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+  function chart(selection) {
+    selection.each(function(data) {
+
+maxvalue = (Math.abs(d3.extent(data, function(d) { return d.interactions; })[0]) > Math.abs(d3.extent(data, function(d) { return d.interactions; })[1])) ? Math.abs(d3.extent(data, function(d) { return d.interactions; })[0]) : Math.abs(d3.extent(data, function(d) { return d.interactions; })[1]);
+
+      x.domain([maxvalue*-1, maxvalue]);
+      y.domain(data.map(function(d) { return d.age; }));
+
+      var minInteractions = Math.max.apply(Math, data.map(function(o){return o.interactions;}))*-1;
+      yAxis.tickPadding(Math.abs(x(minInteractions) - x(0)) + 10);
+
+      var bar = svg.selectAll(".bar")
+          .data(data)
+
+
+      bar.enter().append("rect")
+          .attr("class", function(d) { return "bar bar--" + (d.interactions < 0 ? "negative" : "positive"); })
+          .attr("x", function(d) { return x(Math.min(0, d.interactions)); })
+          .attr("y", function(d) { return y(d.age); })
+          .attr("width", function(d) { return Math.abs(x(d.interactions) - x(0)); })
+          .attr("id", function(d){ return d.age})
+          .attr("style", function(d){ return d.colour == null ? "" : "fill:" + d.colour;})
+          .attr("height", y.rangeBand())
+        
+          
+
+      bar.enter().append('text')
+          .attr("text-anchor", "end")
+          .attr("x", function(d,i) {
+
+              var titlePlacement = Math.abs(x(d.interactions) - x(0)) + x(Math.min(0, d.interactions))-5;
+              if( Math.abs(x(d.interactions) - x(0)) < 30 && d.interactions > 0)
+               titlePlacement += 30;
+              else if(d.interactions < 0) //Negative placement
+              {
+                titlePlacement = x(Math.min(0, d.interactions))-5;
+
+              }
+
+
+              return titlePlacement;
+          })
+          .attr("y", function(d,i) {
+              return y(d.age) + (y.rangeBand() / 2);
+          })
+          //.attr("dy", ".35em")
+          //.text(function (d) { return d.interactions; })
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+      svg.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + x(0) + ",0)")
+          .call(yAxis);
+      svg.append("text")
+          .attr("x", (width / 2))             
+          .attr("y", 0 - (margin.top / 2))
+          .attr("text-anchor", "middle")  
+          .style("font-size", "16px") 
+          .style("text-decoration", "underline")  
+          .text("Quality of Life in Ontario from 2017 to 2021");
+      svg.append("text")
+          .attr("class", "x label")
+          .attr("text-anchor", "end")
+          .attr("x", (width / 2) + 50)
+          .attr("y", height + 50)
+          .text("Percentage Change (%)");
+      svg.append("text")
+          .attr("class", "y label")
+          .attr("text-anchor", "end")
+          .attr("x", -100)
+          .attr("y", -100)
+          .attr("dy", ".35em")
+          .attr("transform", "rotate(-90)")
+          .text("Nominal variables affecting quality of life");
+
+    });
+
+  }
+
+  return chart;
+}
+
+
+
+var data = {"Other":[{"age":"marriage","gender":"male","interactions":20},{"age":"birth","gender":"female","interactions":-5},{"age":"death","gender":"female","interactions":-30},{"age":"unemployment","gender":"male","interactions":50},{"age":"crime","gender":"female","interactions":-11}]};
+for (var i in data) {
+  var chart = tornadoChart()
+  d3.select("#example")
+      .datum(data[i])
+      .call(chart);
+}
+
+</script>
+</body>

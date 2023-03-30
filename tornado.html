@@ -39,6 +39,7 @@ text {
 
 <script>
 
+// create the outline of the tornado chart
 function tornadoChart() {
   var margin = {top: 50, right: 20, bottom: 70, left: 130},
     width = 900 - margin.left - margin.right,
@@ -55,19 +56,21 @@ function tornadoChart() {
       .orient("bottom")
       .ticks(10)
 
-
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
       .tickSize(0)
 
+  // add graph onto scene
   var svg = d3.select("body").append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
     	.append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-  
+  // read in data from percentage sheet
+  var data = d3.csv("C:\Users\djego\OneDrive\Documents\GitHub\ITEC2100_GroupProject\sheet.csv", function(data) {    
+
     // List of groups (here I have one group per column) -- code from here https://d3-graph-gallery.com/graph/line_select.html 
     var allGroup = ["2017-2018", "2018-2019", "2019-2020", "2020-2021"]
   
@@ -79,6 +82,16 @@ function tornadoChart() {
       .append('option')
       .text(function (d) { return d; }) // text showed in the menu
       .attr("value", function (d) { return d; }) // corresponding value returned by the button
+
+ // Initialize line with group a
+ var bar = svg
+      .append('g')
+      .append("path")
+        .datum(data)
+        .attr("d", d3.bar()
+          .x(function(d) { return x(+d.category) })
+          .y(function(d) { return y(+d,2017-2018) })
+        )
 
   function chart(selection) {
     selection.each(function(data) {
@@ -161,19 +174,15 @@ maxvalue = (Math.abs(d3.extent(data, function(d) { return d.interactions; })[0])
     });
 
   }
+})
 
   return chart;
 }
 
 
 
-var data = {"Other":[{"age":"marriage","gender":"male","interactions":20},{"age":"birth","gender":"female","interactions":-5},{"age":"death","gender":"female","interactions":-30},{"age":"unemployment","gender":"male","interactions":50},{"age":"crime","gender":"female","interactions":-11}]};
-for (var i in data) {
-  var chart = tornadoChart()
-  d3.select("#example")
-      .datum(data[i])
-      .call(chart);
-}
+//var data = {"Other":[{"age":"marriage","gender":"male","interactions":20},{"age":"birth","gender":"female","interactions":-5},{"age":"death","gender":"female","interactions":-30},{"age":"unemployment","gender":"male","interactions":50},{"age":"crime","gender":"female","interactions":-11}]};
+
 
 </script>
 </body>

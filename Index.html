@@ -15,12 +15,11 @@
 <script src="https://d3js.org/d3.v4.js"></script>
 
 
-<!-- Add 2 buttons -->
-<button onclick="update(data1)">2017</button>
-<button onclick="update(data2)">2018</button>
-<button onclick="update(data3)">2019</button>
-<button onclick="update(data4)">2020</button>
-<button onclick="update(data5)">2021</button>
+<!-- Add 4 buttons -->
+<button onclick="update(data1)">2017-2018</button>
+<button onclick="update(data2)">2018-2019</button>
+<button onclick="update(data3)">2019-2020</button>
+<button onclick="update(data4)">2020-2021</button>
 
 
 <!-- Create a div where the graph will take place -->
@@ -30,7 +29,7 @@
 
     // create 2 data_set
     var data1 = [
-       {group: "Marriage", value: 4},
+       {group: "Marriage", value: -0.65},
        {group: "Death", value: 16},
        {group: "Birth", value: 8},
        {group: "Unemployment", value: 20},
@@ -59,14 +58,6 @@
        {group: "Birth", value: 20},
        {group: "Unemployment", value: 16},
        {group: "Crime", value: 0}
-    ];
-    
-    var data5 = [
-       {group: "Marriage", value: 2},
-       {group: "Death", value: 10},
-       {group: "Birth", value: 0},
-       {group: "Unemployment", value: 18},
-       {group: "Crime", value: 6}
     ];
     
 

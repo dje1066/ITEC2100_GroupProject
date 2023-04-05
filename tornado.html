@@ -1,188 +1,141 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
+<html>
 
-<!--this file includes a butterfly chart that illustrates our visual intentions
-
-
-code is taken from https://stackoverflow.com/questions/38969051/how-do-i-centre-the-y-axis-in-a-d3-tornado-chart -->
-
-
-<style>
-
-.bar--positive {
-  fill: lightgreen;
-}
-
-.bar--negative {
-  fill: firebrick;
-}
-
-text {
-  font: 10px sans-serif;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-}
-</style>
+<head>
+  <link rel="stylesheet" type="text/css" href="tornadocss.css">
+	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+	<script src="tornadojs.js"></script>
+</head>
 
 <body>
 
-<p id="example"></p>
+		<br />
+		<hr>
+		<br />
+	
+	<h1 style="text-align:center";>Quality of Life, 2017 to 2021</h1>
+		<br />
+		<hr>
+		<br />
+		
+	<div class="popup">
+		<div class="message_box">
+			<p>Hey there! </p>
+			<p>Great to see you here. On this page, you will find a visualization demonstrating the percentage change of multiple categories over 5 years. </p>
+			<p>We hope you enjoy the experience!</p>
+			<div class="button" id="close_popup">Let's Go</div>
+		</div>
+	</div>
+	
+<!--Hello! this is our first draft visualization attempt
+      This file includes an interactive bar chart that changes as you press the buttons
+        we will use this for interactive reference
+      
+      code is taken from https://d3-graph-gallery.com/graph/barplot_button_data_simple.html -->
+ 
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
 
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<!-- Add 2 buttons -->
+<button onclick="update(data1)">2017-2018</button>
+<button onclick="update(data2)">2018-2019</button>
+<button onclick="update(data3)">2019-2020</button>
+<button onclick="update(data4)">2020-2021</button>
 
-<!-- Initialize a select button -->
-<select id="selectButton"></select>
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
 
 <script>
 
-// create the outline of the tornado chart
-function tornadoChart() {
-  var margin = {top: 50, right: 20, bottom: 70, left: 130},
-    width = 900 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-  var x = d3.scale.linear()
-      .range([0, width]);
-
-  var y = d3.scale.ordinal()
-      .rangeRoundBands([0, height], 0.1);
-
-  var xAxis = d3.svg.axis()
-      .scale(x)
-      .orient("bottom")
-      .ticks(10)
-
-  var yAxis = d3.svg.axis()
-      .scale(y)
-      .orient("left")
-      .tickSize(0)
-
-  // add graph onto scene
-  var svg = d3.select("body").append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-    	.append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-
-  // read in data from percentage sheet
-  var data = d3.csv("C:\Users\djego\OneDrive\Documents\GitHub\ITEC2100_GroupProject\sheet.csv", function(data) {    
-
-    // List of groups (here I have one group per column) -- code from here https://d3-graph-gallery.com/graph/line_select.html 
-    var allGroup = ["2017-2018", "2018-2019", "2019-2020", "2020-2021"]
+    // create 2 data_set
+    var data1 = [
+       {group: "Marriage", value: -0.65},
+       {group: "Death", value: 16},
+       {group: "Birth", value: 8},
+       {group: "Unemployment", value: 20},
+       {group: "Crime", value: 10}
+    ];
+    
+    var data2 = [
+       {group: "Marriage", value: 7},
+       {group: "Death", value: 1},
+       {group: "Birth", value: 20},
+       {group: "Unemployment", value: 16},
+       {group: "Crime", value: 6}
+    ];
+    
+    var data3 = [
+       {group: "Marriage", value: 6},
+       {group: "Death", value: 10},
+       {group: "Birth", value: 2},
+       {group: "Unemployment", value: 20},
+       {group: "Crime", value: 20}
+    ];
+    
+    var data4 = [
+       {group: "Marriage", value: 7},
+       {group: "Death", value: 1},
+       {group: "Birth", value: 20},
+       {group: "Unemployment", value: 16},
+       {group: "Crime", value: 0}
+    ];
+    
+    // set the dimensions and margins of the graph
+    var margin = {top: 30, right: 30, bottom: 60, left: 60},
+        width = 460 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    
+    // append the svg object to the body of the page
+    var svg = d3.select("#my_dataviz")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
   
-    // add the options to the button
-    d3.select("#selectButton")
-      .selectAll('myOptions')
-      .data(allGroup)
-      .enter()
-      .append('option')
-      .text(function (d) { return d; }) // text showed in the menu
-      .attr("value", function (d) { return d; }) // corresponding value returned by the button
+    // X axis
+    var x = d3.scaleBand()
+      .range([ 0, width ]) // where the x axis starts on the left side
+      .domain(data1.map(function(d) { return d.group; }))
+      .padding(0.6);
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+    
+    // Add Y axis
+    var y = d3.scaleLinear()
+      .domain([0, 20])
+      .range([ height, 1]);
+    svg.append("g")
+      .attr("class", "myYaxis")
+      .call(d3.axisLeft(y));
+    
+    // A function that create / update the plot for a given variable:
+    function update(data) {
+    
+      var u = svg.selectAll("rect")
+        .data(data)
+    
+      u
+        .enter()
+        .append("rect")
+        .merge(u)
+        .transition()
+        .duration(1000)
+          .attr("x", function(d) { return x(d.group); })
+          .attr("y", function(d) { return y(d.value); })
+          .attr("width", x.bandwidth())
+          .attr("height", function(d) { return height - y(d.value); })
+          .attr("fill", "#69b3a2")
+    }
+    
 
- // Initialize line with group a
- var bar = svg
-      .append('g')
-      .append("path")
-        .datum(data)
-        .attr("d", d3.bar()
-          .x(function(d) { return x(+d.category) })
-          .y(function(d) { return y(+d,2017-2018) })
-        )
+    // Initialize the plot with the first dataset
+    update(data1)
+    
+    </script>
 
-  function chart(selection) {
-    selection.each(function(data) {
-
-maxvalue = (Math.abs(d3.extent(data, function(d) { return d.interactions; })[0]) > Math.abs(d3.extent(data, function(d) { return d.interactions; })[1])) ? Math.abs(d3.extent(data, function(d) { return d.interactions; })[0]) : Math.abs(d3.extent(data, function(d) { return d.interactions; })[1]);
-
-      x.domain([maxvalue*-1, maxvalue]);
-      y.domain(data.map(function(d) { return d.age; }));
-
-      var minInteractions = Math.max.apply(Math, data.map(function(o){return o.interactions;}))*-1;
-      yAxis.tickPadding(Math.abs(x(minInteractions) - x(0)) + 10);
-
-      var bar = svg.selectAll(".bar")
-          .data(data)
-
-
-      bar.enter().append("rect")
-          .attr("class", function(d) { return "bar bar--" + (d.interactions < 0 ? "negative" : "positive"); })
-          .attr("x", function(d) { return x(Math.min(0, d.interactions)); })
-          .attr("y", function(d) { return y(d.age); })
-          .attr("width", function(d) { return Math.abs(x(d.interactions) - x(0)); })
-          .attr("id", function(d){ return d.age})
-          .attr("style", function(d){ return d.colour == null ? "" : "fill:" + d.colour;})
-          .attr("height", y.rangeBand())
-        
-          
-
-      bar.enter().append('text')
-          .attr("text-anchor", "end")
-          .attr("x", function(d,i) {
-
-              var titlePlacement = Math.abs(x(d.interactions) - x(0)) + x(Math.min(0, d.interactions))-5;
-              if( Math.abs(x(d.interactions) - x(0)) < 30 && d.interactions > 0)
-               titlePlacement += 30;
-              else if(d.interactions < 0) //Negative placement
-              {
-                titlePlacement = x(Math.min(0, d.interactions))-5;
-
-              }
-
-
-              return titlePlacement;
-          })
-          .attr("y", function(d,i) {
-              return y(d.age) + (y.rangeBand() / 2);
-          })
-          //.attr("dy", ".35em")
-          //.text(function (d) { return d.interactions; })
-
-      svg.append("g")
-          .attr("class", "x axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(xAxis);
-      svg.append("g")
-          .attr("class", "y axis")
-          .attr("transform", "translate(" + x(0) + ",0)")
-          .call(yAxis);
-      svg.append("text")
-          .attr("x", (width / 2))             
-          .attr("y", 0 - (margin.top / 2))
-          .attr("text-anchor", "middle")  
-          .style("font-size", "16px") 
-          .style("text-decoration", "underline")  
-          .text("Quality of Life in Ontario from 2017 to 2021");
-      svg.append("text")
-          .attr("class", "x label")
-          .attr("text-anchor", "end")
-          .attr("x", (width / 2) + 50)
-          .attr("y", height + 50)
-          .text("Percentage Change (%)");
-      svg.append("text")
-          .attr("class", "y label")
-          .attr("text-anchor", "end")
-          .attr("x", -100)
-          .attr("y", -100)
-          .attr("dy", ".35em")
-          .attr("transform", "rotate(-90)")
-          .text("Nominal variables affecting quality of life");
-
-    });
-
-  }
-})
-
-  return chart;
-}
-
-
-
-//var data = {"Other":[{"age":"marriage","gender":"male","interactions":20},{"age":"birth","gender":"female","interactions":-5},{"age":"death","gender":"female","interactions":-30},{"age":"unemployment","gender":"male","interactions":50},{"age":"crime","gender":"female","interactions":-11}]};
-
-
-</script>
 </body>
+
+</html>
